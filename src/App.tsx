@@ -1,12 +1,4 @@
-import {
-    Button,
-    Checkbox,
-    FormControlLabel,
-    FormGroup,
-    Modal,
-    Box,
-    Typography,
-} from "@mui/material";
+import { Button, ButtonGroup, Modal, Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { list } from "./constants/list";
 const style = {
@@ -22,51 +14,38 @@ const style = {
 };
 function App() {
     const [current, setCurrent] = useState<string>("");
-    const [isAll, setIsAll] = useState<boolean>(true);
-    const [isMale, setIsMale] = useState<boolean>(false);
-    const [isFemale, setIsFemale] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>(false);
+    const [currentClass, setCurrentClass] = useState<string>("");
+    const [selected, setSelected] = useState<{
+        one: boolean;
+        two: boolean;
+        three: boolean;
+    }>({
+        one: true,
+        two: false,
+        three: false,
+    });
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const clickHandler = () => {
         for (let i = 0; i < 25; i++) {
             setTimeout(() => {
-                setCurrent(
-                    randomItem(
-                        filterList(list, isAll, isMale, isFemale).map(
-                            (item) => item.name
-                        )
-                    )
-                );
+                // @ts-ignore
+                setCurrent(randomItem(list[currentClass]));
             }, 100 * i);
         }
         setTimeout(() => {
-
-        handleOpen();
+            handleOpen();
         }, 2500);
     };
-    const checkBoxHandler = (e: any) => {
-        console.log(e.target.checked);
-        if (e.target.checked) {
-            console.log(e.target.name);
-            if (e.target.name === "all") {
-                setIsAll(true);
-                setIsMale(false);
-                setIsFemale(false);
-            } else if (e.target.name === "male") {
-                setIsAll(false);
-                setIsMale(true);
-                setIsFemale(false);
-            } else if (e.target.name === "female") {
-                setIsAll(false);
-                setIsMale(false);
-                setIsFemale(true);
-            }
-        } else {
-            setIsAll(false);
-            setIsMale(false);
-            setIsFemale(false);
-        }
+    const changeClass = (className: string) => {
+        setCurrentClass(className);
+    };
+    const styleButton = (active: boolean) => {
+        return {
+            backgroundColor: active ? "#1976d2" : "white",
+            color: active ? "white" : "black",
+        };
     };
     return (
         <div>
@@ -93,50 +72,61 @@ function App() {
                     transform: "translate(-50%, -50%)",
                 }}
             >
+                <div
+                    style={{
+                        marginBottom: "20px",
+                    }}
+                >
+                    <ButtonGroup
+                        variant="contained"
+                        aria-label="outlined primary button group"
+                    >
+                        <Button
+                            style={styleButton(selected.one)}
+                            onClick={() => {
+                                changeClass("10.9");
+                                setSelected({
+                                    one: true,
+                                    two: false,
+                                    three: false,
+                                });
+                            }}
+                        >
+                            10.9
+                        </Button>
+                        <Button
+                            style={styleButton(selected.two)}
+                            onClick={() => {
+                                changeClass("10.11");
+                                setSelected({
+                                    one: false,
+                                    two: true,
+                                    three: false,
+                                });
+                            }}
+                        >
+                            10.11
+                        </Button>
+                        <Button
+                            style={styleButton(selected.three)}
+                            onClick={() => {
+                                setSelected({
+                                    one: false,
+                                    two: false,
+                                    three: true,
+                                });
+                                changeClass("11.4");
+                            }}
+                        >
+                            11.4
+                        </Button>
+                    </ButtonGroup>
+                </div>
+
                 <Button variant="contained" onClick={clickHandler}>
                     Ấn vào đây để random nè
                 </Button>
-                <div>
-                    <FormGroup>
-                        <FormControlLabel
-                            disabled={isMale || isFemale}
-                            checked={isAll}
-                            onChange={checkBoxHandler}
-                            control={
-                                <Checkbox
-                                    inputProps={{
-                                        name: "all",
-                                    }}
-                                />
-                            }
-                            label="Tất cả"
-                        />
-                        <FormControlLabel
-                            onChange={checkBoxHandler}
-                            disabled={isAll || isFemale}
-                            control={
-                                <Checkbox
-                                    inputProps={{
-                                        name: "male",
-                                    }}
-                                />
-                            }
-                            label="Nam"
-                        />
-                        <FormControlLabel
-                            disabled={isAll || isMale}
-                            onChange={checkBoxHandler}
-                            control={
-                                <Checkbox
-                                    inputProps={{
-                                        name: "female",
-                                    }}
-                                />
-                            }
-                            label="Nữ"
-                        />
-                    </FormGroup>
-                </div>
+
                 <Modal
                     open={open}
                     onClose={handleClose}
@@ -173,22 +163,4 @@ const randomItem = (arr: string[]) => {
     return arr[Math.floor(Math.random() * arr.length)];
 };
 
-const filterList = (
-    list: { name: string; gender: string; birthday: string }[],
-    isAll: boolean,
-    isMale: boolean,
-    isFemale: boolean
-) => {
-    return list.filter((item) => {
-        if (isAll) {
-            return item;
-        } else if (isMale) {
-            return item.gender === "Nam";
-        } else if (isFemale) {
-            return item.gender === "Nữ";
-        } else {
-            return item;
-        }
-    });
-};
 export default App;
