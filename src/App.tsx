@@ -1,9 +1,9 @@
-import { Button, ButtonGroup, Modal, Box, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
+import { Button, ButtonGroup } from "@mui/material";
 import { useState } from "react";
 import { list } from "./constants/list";
-import SyncIcon from '@mui/icons-material/Sync';
-
+import RandomName from "./components/RandomName";
+import Footer from "./components/Footer";
+import SpinName from "./components/SpinName";
 const style = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -17,29 +17,19 @@ const style = {
 };
 
 function App() {
-    const [current, setCurrent] = useState<string>("");
-    const [open, setOpen] = useState<boolean>(false);
     const [currentClass, setCurrentClass] = useState<string>("");
-    const [onSpin, setOnSpin] = useState<boolean>(false);
+    const [form, setForm] = useState<string>("");
     const listClass = Object.keys(list);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const clickHandler = () => {
-        if (!currentClass) {
-            return setCurrent("Vui lòng chọn lớp");
-        }
-        setOnSpin(true);
-        for (let i = 0; i < 25; i++) {
-            setTimeout(() => {
-                // @ts-ignore
-                setCurrent(randomItem(list[currentClass]));
-            }, 100 * i);
-        }
-        setTimeout(() => {
-            handleOpen();
-            setOnSpin(false);
-        }, 2500);
-    };
+    const formList = [
+        {
+            name: "spinname",
+            label: "Spin name",
+        },
+        {
+            name: "randomname",
+            label: "Random name",
+        },
+    ];
     const changeClass = (className: string) => {
         setCurrentClass(className);
     };
@@ -96,77 +86,59 @@ function App() {
                         ))}
                     </ButtonGroup>
                 </div>
-                {onSpin ? (
-                    <LoadingButton
-                        loading
-                        loadingIndicator="Đang random..."
-                        variant="text"
+                {currentClass === "" ? (
+                    <h2
                         style={{
-                            position: "relative",
+                            color: "red",
                         }}
                     >
-                    </LoadingButton>
+                        Vui lòng chọn lớp
+                    </h2>
                 ) : (
-                    <Button variant="contained" onClick={clickHandler} startIcon = {<SyncIcon/>}>
-                        Ấn vào đây để random nè
-                    </Button>
-                )}
-
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <Typography
-                            id="modal-modal-title"
-                            variant="h6"
-                            component="h2"
+                    <div
+                        style={{
+                            marginBottom: "20px",
+                        }}
+                    >
+                        <ButtonGroup
+                            variant="contained"
+                            aria-label="outlined primary button group"
                         >
-                            Chúc mừng!!
-                        </Typography>
-                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            <b>{current}</b> đã được chọn
-                        </Typography>
-                    </Box>
-                </Modal>
-                <div
-                    style={{
-                        marginTop: "20px",
-                        color: "green",
-                    }}
-                >
-                    <h2>{current}</h2>
-                </div>
+                            {formList.map((formName) => (
+                                <Button
+                                    key={formName.name}
+                                    onClick={() => setForm(formName.name)}
+                                    style={styleButton(form === formName.name)}
+                                >
+                                    {formName.label}
+                                </Button>
+                            ))}
+                        </ButtonGroup>
+                        <div
+                            style={{
+                                marginTop: "20px",
+                            }}
+                        >
+                            {chooseForm(form, currentClass)}
+                        </div>
+                    </div>
+                )}
             </div>
-            <div
-                style={{
-                    position: "absolute",
-                    bottom: "0",
-                    width: "100%",
-                    textAlign: "center",
-                }}
-            >
-                <h3>Created by: Hoàng Hải Anh (GC) </h3>
-                <a
-                    href="https://github.com/hocsinhgioitoan/randomhocsinh"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                        textDecoration: "none",
-                        color: "black",
-                    }}
-                >
-                    <h3>Link github</h3>
-                </a>
-            </div>
+            <Footer />
         </div>
     );
 }
 
-const randomItem = (arr: string[]) => {
-    return arr[Math.floor(Math.random() * arr.length)];
+const chooseForm = (form: string, currentClass: string) => {
+    console.log(form)
+    switch (form) {
+        case "spinname":
+            return <SpinName currentClass={currentClass} />;
+        case "randomname":
+            return <RandomName currentClass={currentClass} />;
+        default:
+            return <div></div>;
+    }
 };
 
 export default App;
