@@ -1,6 +1,9 @@
 import { Button, ButtonGroup, Modal, Box, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
 import { list } from "./constants/list";
+import SyncIcon from '@mui/icons-material/Sync';
+
 const style = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -12,22 +15,20 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+
 function App() {
     const [current, setCurrent] = useState<string>("");
     const [open, setOpen] = useState<boolean>(false);
     const [currentClass, setCurrentClass] = useState<string>("");
-    const [selected, setSelected] = useState<{
-        one: boolean;
-        two: boolean;
-        three: boolean;
-    }>({
-        one: true,
-        two: false,
-        three: false,
-    });
+    const [onSpin, setOnSpin] = useState<boolean>(false);
+    const listClass = Object.keys(list);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const clickHandler = () => {
+        if (!currentClass) {
+            return setCurrent("Vui lòng chọn lớp");
+        }
+        setOnSpin(true);
         for (let i = 0; i < 25; i++) {
             setTimeout(() => {
                 // @ts-ignore
@@ -36,6 +37,7 @@ function App() {
         }
         setTimeout(() => {
             handleOpen();
+            setOnSpin(false);
         }, 2500);
     };
     const changeClass = (className: string) => {
@@ -47,11 +49,13 @@ function App() {
             color: active ? "white" : "black",
         };
     };
+
     return (
-        <div>
-            {
-                // make title of page
-            }
+        <div
+            style={{
+                backgroundColor: "#f5f5f5",
+            }}
+        >
             <div>
                 <h1
                     style={{
@@ -60,7 +64,7 @@ function App() {
                         fontWeight: "bold",
                     }}
                 >
-                    Random hehehe
+                    Random Tên học sinh
                 </h1>
             </div>
             <div
@@ -81,51 +85,32 @@ function App() {
                         variant="contained"
                         aria-label="outlined primary button group"
                     >
-                        <Button
-                            style={styleButton(selected.one)}
-                            onClick={() => {
-                                changeClass("10.9");
-                                setSelected({
-                                    one: true,
-                                    two: false,
-                                    three: false,
-                                });
-                            }}
-                        >
-                            10.9
-                        </Button>
-                        <Button
-                            style={styleButton(selected.two)}
-                            onClick={() => {
-                                changeClass("10.11");
-                                setSelected({
-                                    one: false,
-                                    two: true,
-                                    three: false,
-                                });
-                            }}
-                        >
-                            10.11
-                        </Button>
-                        <Button
-                            style={styleButton(selected.three)}
-                            onClick={() => {
-                                setSelected({
-                                    one: false,
-                                    two: false,
-                                    three: true,
-                                });
-                                changeClass("11.4");
-                            }}
-                        >
-                            11.4
-                        </Button>
+                        {listClass.map((className) => (
+                            <Button
+                                key={className}
+                                onClick={() => changeClass(className)}
+                                style={styleButton(currentClass === className)}
+                            >
+                                {className}
+                            </Button>
+                        ))}
                     </ButtonGroup>
                 </div>
-
-                <Button variant="contained" onClick={clickHandler}>
-                    Ấn vào đây để random nè
-                </Button>
+                {onSpin ? (
+                    <LoadingButton
+                        loading
+                        loadingIndicator="Đang random..."
+                        variant="text"
+                        style={{
+                            position: "relative",
+                        }}
+                    >
+                    </LoadingButton>
+                ) : (
+                    <Button variant="contained" onClick={clickHandler} startIcon = {<SyncIcon/>}>
+                        Ấn vào đây để random nè
+                    </Button>
+                )}
 
                 <Modal
                     open={open}
@@ -154,6 +139,27 @@ function App() {
                 >
                     <h2>{current}</h2>
                 </div>
+            </div>
+            <div
+                style={{
+                    position: "absolute",
+                    bottom: "0",
+                    width: "100%",
+                    textAlign: "center",
+                }}
+            >
+                <h3>Created by: Hoàng Hải Anh (GC) </h3>
+                <a
+                    href="https://github.com/hocsinhgioitoan/randomhocsinh"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                        textDecoration: "none",
+                        color: "black",
+                    }}
+                >
+                    <h3>Link github</h3>
+                </a>
             </div>
         </div>
     );
